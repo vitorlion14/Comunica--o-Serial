@@ -10,7 +10,7 @@ ssd1306_t display;
 static alarm_id_t alarme_botao_a;
 static alarm_id_t alarme_botao_b;
 
-void iniciar_gpio();
+void iniciar_gpio();  //Configura os pinos GPIO para LEDs e botões, define a direção dos pinos (entrada ou saída).
 int64_t apertar_botao_a(alarm_id_t id, void *user_data);
 int64_t apertar_botao_b(alarm_id_t id, void *user_data);
 static void debounce(uint gpio, uint32_t eventos);
@@ -32,7 +32,7 @@ void iniciar_gpio() {
     gpio_set_irq_enabled_with_callback(BOTAO_B, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true, &debounce);
 }
 
-void iniciar_display() {
+void iniciar_display() {     //Inicializa o display OLED via I2C, configura suas propriedades e limpa a tela.
     i2c_init(i2c1, 400000);
     gpio_set_function(14, GPIO_FUNC_I2C);
     gpio_set_function(15, GPIO_FUNC_I2C);
@@ -47,7 +47,7 @@ void iniciar_display() {
     ssd1306_send_data(&display);
 }
 
-int64_t apertar_botao_a(alarm_id_t id, void *user_data) {
+int64_t apertar_botao_a(alarm_id_t id, void *user_data) { //Funções de callback que alternam o estado dos LEDs verde e azul,
     gpio_put(LED_V, !gpio_get(LED_V));
     exibir_led_verde(gpio_get(LED_V));
     return 0;
@@ -59,7 +59,7 @@ int64_t apertar_botao_b(alarm_id_t id, void *user_data) {
     return 0;
 }
 
-static void debounce(uint gpio, uint32_t eventos) {
+static void debounce(uint gpio, uint32_t eventos) {  //garantir que os botões não gerem múltiplas interrupções devido a ruído.
     if(gpio == BOTAO_A) {
         cancel_alarm(alarme_botao_a);
         if(eventos == GPIO_IRQ_EDGE_FALL) alarme_botao_a = add_alarm_in_ms(DEBOUNCE_MS, apertar_botao_a, NULL, false);
@@ -83,26 +83,26 @@ void exibir_led_azul(bool status) {
 
 int main() {
     stdio_init_all();
-    iniciar_gpio();
-    init_neopixel();
+    iniciar_gpio();                             //código inicializa a UART, os GPIOs, o display OLED e o NeoPixel.
+    init_neopixel(); 
     iniciar_display();
 
     printf("UART conectada com sucesso.\nCaractere Recebido:\n");
 
-    bool ledVerde = gpio_get(LED_V);
-    bool ledAzul = gpio_get(LED_B);
-
-    ssd1306_draw_string(&display, "UART OK", 8, 10);
+    bool ledVerde = gpio_get(LED_V);   
+    bool ledAzul = gpio_get(LED_B);       
+                                         
+    ssd1306_draw_string(&display, "UART OK", 8, 10);   //correspondente ao caractere se for um dígito de '0' a '9'.
     ssd1306_draw_string(&display, "CHAR LIDO ", 8, 20);
     ssd1306_draw_string(&display, "LED VERDE ", 8, 30);
     ssd1306_draw_string(&display, "LED AZUL ", 8, 40);
     ssd1306_send_data(&display);
 
-    exibir_led_verde(ledVerde);
-    exibir_led_azul(ledAzul);
-
+    exibir_led_verde(ledVerde);                     //O loop principal verifica continuamente se um caractere foi recebido via UART,
+    exibir_led_azul(ledAzul);                       //desenha o caractere recebido no display OLED e renderiza uma matriz
+                                                    //correspondente ao caractere se for um dígito de '0' a '9'.
     while (true) {
-        int c = stdio_getchar_timeout_us(10);
+        int c = stdio_getchar_timeout_us(10);     //Ele também monitora mudanças no estado dos LEDs e atualiza o display OLED de acordo.
         if (c != PICO_ERROR_TIMEOUT) {
             printf("Caractere Recebido: %c\n", c);
             ssd1306_draw_char(&display, (char)c, 12*8, 20);

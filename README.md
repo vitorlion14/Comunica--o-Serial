@@ -2,6 +2,11 @@
 
 João Vitor S. Amorim
 
+# VIDEO EXPLICATIVO:
+
+  https://drive.google.com/file/d/1_jr9mcL1o8ER95EGifqHQOYrNAUupktw/view?usp=sharing
+
+
 
 # Descrição do Projeto
 Este projeto demonstra o uso de um Raspberry Pi Pico para controlar um display OLED SSD1306 e uma matriz de LEDs Neopixel. Através de botões de entrada, o estado dos LEDs é alterado e exibido no display OLED. Além disso, caracteres recebidos via UART são exibidos no display e também representados na matriz de LEDs Neopixel.
@@ -75,11 +80,6 @@ Este projeto demonstra o uso de um Raspberry Pi Pico para controlar um display O
 
 - Atualização da matriz com base nos caracteres recebidos via UART.
 
-# anipulação de Botões com Debounce:
-
- - Configuração dos pinos GPIO como entrada para os botões e ativação dos resistores de pull-up.
-
- - Tratamento de interrupções com debounce para evitar leituras erradas.
 
 # Alteração do estado dos LEDs vermelhos, verdes e azuis com base nas interrupções dos botões.
 
